@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+	<title>Document</title>
+	<style type="text/css">
+		*{
+			padding: 0;
+			margin: 0
+		}
+		a{
+			text-decoration: none;
+			min-width: 120px;
+		}
+		#h21{
+			height: 50px;
+			background: #ccc;
+			text-align: center;
+			line-height: 50px;
+		}
+		#demo>p{
+			height: 30px;
+			width: 100vw;
+		}
+		#demo>p a{
+			display: block;
+			float: left;
+			text-align: center;
+			height: 30px;
+			text-decoration: none;
+			font-size: 20px;
+			width: 50%;
+			background: #f00;
+		}
+		#demo div{
+			text-align: center;
+		}
+		#demo div p{
+			font-size: 30px;
+			height: 60px;
+			line-height: 60px;
+		}
+	</style>
+</head>
+<body>
+	<div id="demo">
+		<h2 id="h21">{{text}}</h2>
+		<p>
+			<a href="#!/index">index</a>
+			<a href="#!/home">home</a>
+		</p>
+		<router-view></router-view>
+		
+	</div>
+</body>
+<template id="Oindex">
+	<div>
+		<p>hello world</p>
+		<h2>我是Vue的首页</h2>
+		<p>
+			<a href="#!/index/page">page</a>
+		</p>
+		<router-view :a='name'></router-view>
+	</div>
+</template>
+<template id="home">
+	<div>
+		<p>hello world</p>
+		<h2>我是Vue的home页</h2>
+		<p>
+			<a href="#!/home/page">page</a>
+		</p>
+		<router-view :a='name'></router-view>
+	</div>
+</template>
+<template id="page" >
+	<div>
+		<p>hello world</p>
+		<h2>我是Vue的分页</h2>
+		<p>
+			<a href="#!/{{name}}/detail">detail</a>
+		</p>
+		<!-- <router-view></router-view> -->
+	</div>
+</template>
+<template id="detail">
+	<div>
+		<p>hello world</p>
+		<h2>我是Vue的详情页</h2>
+	</div>
+</template>
+<script src='vue.js'></script>
+<script src='vue-router.js'></script>
+<script type="text/javascript">
+	var demo=new Vue({
+		el:'#demo',
+		data:{
+			text:'这是my页面'
+		}
+	})
+	var index=Vue.extend({
+		template:'#Oindex',
+		
+		data:function(){
+			return {
+				name:'index'
+			}
+		},
+	})
+	var page=Vue.extend({
+		template:'#page',
+		props:['a'],
+		data:function(){
+			return {
+				name:this.a
+			}
+		},
+		ready:function(){
+			console.log(this.a)
+		}
+		
+	})
+	var detail=Vue.extend({
+		template:'#detail',
+	})
+	var home=Vue.extend({
+		template:'#home',
+		data:function(){
+			return {
+				name:'home'
+			}
+		},
+	})
+	var app=Vue.extend({
+
+	})
+	var router = new VueRouter({
+	});
+	router.map({
+		'/index':{
+			component:index,
+			
+			subRoutes:{
+				'/page':{
+					component:page,
+				},
+					
+				'/detail':{
+					component:detail,
+				}
+					
+				
+			}
+		},
+		'/home':{
+			component:home,
+			data:{
+				name:'home'
+			},
+			subRoutes:{
+				'/page':{
+					component:page,
+					subRoutes:{
+						'/detail':{
+							component:detail
+						}
+					}
+				}
+			}
+		}
+	})
+	router.redirect({
+		'*':'/index'
+	})
+	router.start(app,'#demo')
+</script>
+</html>
